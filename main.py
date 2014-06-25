@@ -2,7 +2,7 @@ import urllib2
 import json
 import pygame, sys
 from pygame.locals import *
-from choose_weather import *
+# from choose_weather import *
 import pprint
 import time
 
@@ -23,6 +23,61 @@ try:
 except ImportError:
     import android.mixer as mixer
 
+city = "palo alto, ca"
+class Weather():
+    def __init__(self, city):
+        import time
+        self.city = city
+        info = urllib2.urlopen('http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial'.format(self.city))
+        data = info.read()
+        j_data = json.loads(data)
+        max_temp = (j_data["main"]["temp_max"])
+        min_temp = (j_data["main"]["temp_min"])
+        current_temp = (j_data["main"]["temp"])
+        wind_speed = (j_data["wind"]["speed"])
+        # gust = (j_data["wind"]["gust"])
+        date = (j_data["dt"])
+        time = time.ctime(date)
+        print(time)
+        s_time = int(j_data["sys"]["sunrise"])
+        sunset_time = int(j_data["sys"]["sunset"])
+        #sunrise_time = time.asctime(s_time)
+
+        self.description = weather_font_large.render("The name of the city is " + j_data["name"], True, RED)
+        self.description_2 = wind_font.render("It is located in the country of " + j_data["sys"]["country"], True, RED)
+        self.weather = weather_font.render(j_data["weather"][0]["description"], True, GREEN)
+        self.maximum_temp = weather_font.render("The maximum temperature today is {} degrees".format(max_temp), True, PURPLE)
+        self.minimum_temp = weather_font.render("The minimum temperature will be {} degrees".format(min_temp), True, PURPLE)
+        self.current_temperature = weather_font.render("The current temperature is {} degrees.".format(current_temp), True, LIGHT_BLUE)
+        self.wind_description = wind_font.render("There is a wind blowing at {} mph ".format(wind_speed), True, LIGHT_GREEN)
+        self.day = weather_font.render("The date is {}".format(time), True, PINK)
+        self.sunrise_text = weather_font.render("The sun rises at {} and sets at {}".format(s_time, sunset_time), True, LIGHT_BLUE)
+
+        self.description_rect = pygame.Rect(120, 10, 600, 100)
+        self.description2_rect = pygame.Rect(60, 60, 60, 100)
+        self.weather_rect = pygame.Rect(300, 110, 600, 100)
+        self.maximum_temp_rect = pygame.Rect(30, 160, 600, 100)
+        self.min_temp_rect = pygame.Rect(30, 210, 600, 100)
+        self.current_temperature_rect = pygame.Rect(60, 260, 600, 100)
+        self.wind_description_rect = pygame.Rect(2, 310, 600, 100)
+        self.day_rect = pygame.Rect(35, 360, 600, 100)
+        self.menu_rect = pygame.Rect(1040, 575, 40, 40)
+        self.sunrise_rect = pygame.Rect(50, 410, 600, 100)
+
+    #def choose_weather(self, city):
+    def draw(self):
+         windowSurface.blit(self.description, self.description_rect)
+         windowSurface.blit(self.description_2, self.description2_rect)
+         windowSurface.blit(self.weather, self.weather_rect)
+         windowSurface.blit(self.maximum_temp, self.maximum_temp_rect)
+         windowSurface.blit(self.minimum_temp, self.min_temp_rect)
+         windowSurface.blit(self.current_temperature, self.current_temperature_rect)
+         windowSurface.blit(self.wind_description, self.wind_description_rect)
+         windowSurface.blit(self.day, self.day_rect)
+         #windowSurface.blit(self.palo_alto_pic, self.picture_rect)
+         windowSurface.blit(self.sunrise_text, self.sunrise_rect)
+
+
 
 windowSurface = pygame.display.set_mode((1280, 770))
 
@@ -42,7 +97,7 @@ weather_font_large = pygame.font.Font("fonts/animeace2_reg.ttf", 45)
 wind_font = pygame.font.Font("fonts/animeace2_reg.ttf", 28)
 title_font = pygame.font.Font("fonts/ASTONISH.TTF", 200)
 
-city = "palo alto, ca"
+
 pull = sys.argv
 
 if len(pull) < 2:
@@ -50,16 +105,9 @@ if len(pull) < 2:
 else:
     city = (pull[1])
 
+weather = Weather("Palo Alto, ca")
 ### checking for internet connection
 try:
-    info = urllib2.urlopen('http://api.openweathermap.org/data/2.5/weather?q={}&units=imperial'.format(city))
-    data = info.read()
-    j_data = json.loads(data)
-    # count = (j_data["count"])
-    pprint.pprint(j_data)
-    #
-    # if count > 1:
-    #     print("Specify country")
 
     pa_button = True
     sc_button = True
@@ -71,32 +119,11 @@ try:
     sc_weather = pygame.draw.circle(windowSurface, LIGHT_BLUE, (150, 475), 100, 5)
     menu = pygame.draw.circle(windowSurface, WHITE, (1100, 600), 100, 5)
 
-    picture_rect = pygame.Rect(100, 475, 900, 400)
+
     title_rect = pygame.Rect(580, 10, 600, 100)
     title_2_rect = pygame.Rect(640, 80, 600, 100)
-    description_rect = pygame.Rect(120, 10, 600, 100)
-    description2_rect = pygame.Rect(120, 60, 60, 100)
-    weather_rect = pygame.Rect(40, 110, 600, 100)
-    maximum_temp_rect = pygame.Rect(30, 160, 600, 100)
-    min_temp_rect = pygame.Rect(30, 210, 600, 100)
-    current_temperature_rect = pygame.Rect(60, 260, 600, 100)
-    wind_description_rect = pygame.Rect(2, 310, 600, 100)
-    day_rect = pygame.Rect(35, 360, 600, 100)
+    picture_rect = pygame.Rect(100, 475, 900, 400)
     menu_rect = pygame.Rect(1040, 575, 40, 40)
-    sunrise_rect = pygame.Rect(50, 410, 600, 100)
-
-
-    max_temp = (j_data["main"]["temp_max"])
-    min_temp = (j_data["main"]["temp_min"])
-    current_temp = (j_data["main"]["temp"])
-    wind_speed = (j_data["wind"]["speed"])
-    #gust = (j_data["wind"]["gust"])
-    date = (j_data["dt"])
-    time = time.ctime(date)
-    print(time)
-    s_time = int(j_data["sys"]["sunrise"])
-    sunset_time = int(j_data["sys"]["sunset"])
-    #sunrise_time = time.asctime(s_time)
 
 
     title = title_font.render("Weather", True, PURPLE)
@@ -105,15 +132,6 @@ try:
     pa_2_text = weather_font.render("Alto", True, WHITE)
     sc_text = wind_font.render("Capitola", True, LIGHT_GREEN)
     menu_text = weather_font.render("Home", True, LIGHT_BLUE)
-    description = weather_font_large.render("The name of the city is " + j_data["name"], True, RED)
-    description_2 = weather_font_large.render("It is located in the country of " + j_data["sys"]["country"], True, RED)
-    weather = weather_font.render("The " + j_data["weather"][0]["description"], True, GREEN)
-    maximum_temp = weather_font.render("The maximum temperature today is {} degrees".format(max_temp), True, PURPLE)
-    minimum_temp = weather_font.render("The minimum temperature will be {} degrees".format(min_temp), True, PURPLE)
-    current_temperature = weather_font.render("The current temperature is {} degrees.".format(current_temp), True, LIGHT_BLUE)
-    wind_description = wind_font.render("There is a wind blowing at {} mph ".format(wind_speed), True, LIGHT_GREEN)
-    day = weather_font.render("The date is {}".format(time), True, PINK)
-    sunrise_text = weather_font.render("The sun rises at {} and sets at {}".format(s_time, sunset_time), True, LIGHT_BLUE)
 
 
 
@@ -126,9 +144,11 @@ try:
             if event.type == MOUSEBUTTONDOWN:
                 if pa_weather.collidepoint(mouse_pos):
                     pa_button = False
+                    weather = Weather(city = "Palo Alto, ca")
                     # pa_button_2 = False
                 if sc_weather.collidepoint(mouse_pos):
                     sc_button = False
+                    weather = Weather(city = "Capitola, ca")
                 if menu.collidepoint(mouse_pos):
                     pa_button = True
                     sc_button = True
@@ -150,25 +170,18 @@ try:
 
         if pa_button == False:
             windowSurface.fill((0,0,0))
-            windowSurface.blit(description, description_rect)
-            windowSurface.blit(description_2, description2_rect)
-            windowSurface.blit(weather, weather_rect)
-            windowSurface.blit(maximum_temp, maximum_temp_rect)
-            windowSurface.blit(minimum_temp, min_temp_rect)
-            windowSurface.blit(current_temperature, current_temperature_rect)
-            windowSurface.blit(wind_description, wind_description_rect)
-            windowSurface.blit(day, day_rect)
+            # windowSurface.blit(choose_weather, description_rect)
+            weather.draw()
             windowSurface.blit(palo_alto_pic, picture_rect)
-            windowSurface.blit(sunrise_text, sunrise_rect)
+            # windowSurface.blit(sunrise_text, sunrise_rect)
 
             menu = pygame.draw.circle(windowSurface, WHITE, (1100, 600), 100, 5)
             windowSurface.blit(menu_text, menu_rect)
 
         if sc_button == False:
             windowSurface.fill((0,0,0))
-            windowSurface.blit(title, title_rect)
-            windowSurface.blit(title_2, title_2_rect)
             menu = pygame.draw.circle(windowSurface, WHITE, (1100, 600), 100, 5)
+            weather.draw()
             windowSurface.blit(menu_text, menu_rect)
 
 
