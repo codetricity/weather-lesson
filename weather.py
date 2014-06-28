@@ -2,6 +2,8 @@ import urllib2
 import json
 import pygame
 import datetime
+from global_values import windowSurface
+
 
 class Weather():
     def __init__(self, city):
@@ -56,18 +58,17 @@ class Weather():
             self.sunrise_rect = pygame.Rect(50, 410, 600, 100)
 
     def draw(self):
-        main_surface = pygame.Surface((1280, 770))
+        # main_surface = pygame.Surface((1280, 770))
 
-        main_surface.blit(self.description, self.description_rect)
-        main_surface.blit(self.description_2, self.description2_rect)
-        main_surface.blit(self.weather, self.weather_rect)
-        main_surface.blit(self.maximum_temp, self.maximum_temp_rect)
-        main_surface.blit(self.minimum_temp, self.min_temp_rect)
-        main_surface.blit(self.current_temperature, self.current_temperature_rect)
-        main_surface.blit(self.wind_description, self.wind_description_rect)
-        main_surface.blit(self.day, self.day_rect)
-        main_surface.blit(self.sunrise_text, self.sunrise_rect)
-        return main_surface
+        windowSurface.blit(self.description, self.description_rect)
+        windowSurface.blit(self.description_2, self.description2_rect)
+        windowSurface.blit(self.weather, self.weather_rect)
+        windowSurface.blit(self.maximum_temp, self.maximum_temp_rect)
+        windowSurface.blit(self.minimum_temp, self.min_temp_rect)
+        windowSurface.blit(self.current_temperature, self.current_temperature_rect)
+        windowSurface.blit(self.wind_description, self.wind_description_rect)
+        windowSurface.blit(self.day, self.day_rect)
+        windowSurface.blit(self.sunrise_text, self.sunrise_rect)
 
     def open_network(self):
         self.connected = True
